@@ -18,26 +18,13 @@ namespace FTPFA5601
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-            //try
-            //{
-            //    System.Net.WebClient client = new System.Net.WebClient();
-            //    client.Credentials = new System.Net.NetworkCredential(@"AzureUser", @"Passw0rd5689");
-            //    client.UploadFile(@"ftp://104.46.7.78/file.txt", @"C:\users\macavall\Desktop\file.txt");
-            //}
-            //catch (Exception exc)
-            //{
-            //    log.LogInformation(exc.Message);
-            //}
-
-            //    Environment.GetEnvironmentVariable("ftp://104.46.7.78"),
-            //    Environment.GetEnvironmentVariable("AzureUser"),
-            //    Environment.GetEnvironmentVariable("Passw0rd5689"));
 
             try
             {
 
                 var client = new FluentFTP.FtpClient("104.46.7.78", @"ftpuser2", "password");
 
+                // Change this value to a string of the path you would like to check for your user.  My user name was AzrueUser
                 var items = await client.GetListingAsync("/home/AzureUser");
 
                 foreach (var i in items)
@@ -47,7 +34,7 @@ namespace FTPFA5601
             }
             catch (Exception exc)
             {
-                log.LogInformation(exc.Message);
+               log.LogInformation(exc.Message);
             }
 
 
@@ -62,6 +49,18 @@ namespace FTPFA5601
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
 
             return new OkObjectResult(responseMessage);
+        }
+
+        public static byte[] FileToByteArray(string fileName)
+        {
+            byte[] buff = null;
+            FileStream fs = new FileStream(fileName,
+                                           FileMode.Open,
+                                           FileAccess.Read);
+            BinaryReader br = new BinaryReader(fs);
+            long numBytes = new FileInfo(fileName).Length;
+            buff = br.ReadBytes((int)numBytes);
+            return buff;
         }
     }
 }
